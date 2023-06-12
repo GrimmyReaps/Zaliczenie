@@ -28,19 +28,6 @@
                 android:layout_weight="1"
                 android:text="Nowe Zadanie" />
 
-            <Button
-                android:id="@+id/editItem"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Edytuj Zadanie" />
-
-            <Button
-                android:id="@+id/deleteItem"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Usuń Zadanie" />
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView

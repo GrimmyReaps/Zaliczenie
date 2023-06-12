@@ -7,15 +7,18 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.Calendar;
 
-public class CreateEditTask extends AppCompatActivity {
+public class CreateEditTask extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
     Button createNewTaskBtn;
     Button cancelBtn;
@@ -24,6 +27,9 @@ public class CreateEditTask extends AppCompatActivity {
     TextView newTaskNameTxt;
     EditText newTaskDeadlineTxt;
     TextInputEditText newTaskContentTxt;
+    TextView newTaskPriorityChoice;
+    Spinner priorityChoice;
+    String[] priorities = {"HIGH", "MEDIUM", "LOW"};
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -100,6 +106,14 @@ public class CreateEditTask extends AppCompatActivity {
         editTaskBtn = (Button) findViewById(R.id.editTask);
         editCancelBtn = (Button) findViewById(R.id.cancelEdit);
 
+        priorityChoice = (Spinner) findViewById(R.id.choosePriority);
+        priorityChoice.setOnItemSelectedListener(this);
+        ArrayAdapter aa = new ArrayAdapter(this, android.R.layout.simple_spinner_item, priorities);
+        aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        priorityChoice.setAdapter(aa);
+
+        newTaskPriorityChoice = (TextView) findViewById(R.id.priorityDisplay);
+
         Intent caller = getIntent();
         Bundle sendInfo = caller.getExtras();
         boolean isAdding = sendInfo.getBoolean("isAdding");
@@ -110,5 +124,15 @@ public class CreateEditTask extends AppCompatActivity {
             createNewTaskBtn.setVisibility(View.GONE);
             cancelBtn.setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+        newTaskPriorityChoice.setText(priorities[i]);
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+        newTaskPriorityChoice.setText("LOW");
     }
 }

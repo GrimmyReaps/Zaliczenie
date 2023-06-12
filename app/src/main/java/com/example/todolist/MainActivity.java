@@ -5,17 +5,19 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Spinner;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    Button editItem, addItem, deleteItem;
+    Button addItem;
     RecyclerView recyclerView;
-    ArrayList<Task> tasks;
+    ArrayList<TaskModal> tasks;
     private  DBHandler dbHandler;
 
     @Override
@@ -23,18 +25,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        dbHandler = new DBHandler(MainActivity.this);
+
+        dbHandler.addNewTask("FirstTask", "No Content", "22-02-2024", "LOW");
+        tasks = dbHandler.readTasks();
+
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        tasks = Task.createTasksList(30);
-        CustomAdapter adapter = new CustomAdapter(tasks);
+        CustomAdapter adapter = new CustomAdapter(tasks, MainActivity.this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         addItem = (Button) findViewById(R.id.addItem);
         addItem.setOnClickListener(this);
-    }
-
-    private void xmlSetup(){
-
     }
 
     @Override
