@@ -30,6 +30,39 @@
 
         </LinearLayout>
 
+        <TextView
+            android:id="@+id/sortInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Posortuj według:" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/sortByName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Nazwy" />
+
+            <Button
+                android:id="@+id/sortByDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Daty dodania" />
+
+            <Button
+                android:id="@+id/sortByDeadline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Daty Deadlajnu" />
+        </LinearLayout>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"

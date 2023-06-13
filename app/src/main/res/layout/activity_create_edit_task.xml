@@ -15,7 +15,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
+        <EditText
             android:id="@+id/newTaskName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -27,7 +27,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="Podaj datę zakończecnia"
+            android:hint="Podaj datę zakończenia"
             android:inputType="date" />
 
         <LinearLayout
@@ -68,16 +68,23 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/cancelEdit"
+                android:id="@+id/deleteTask"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="Button" />
+                android:text="Usuń" />
+
+            <Button
+                android:id="@+id/markAsComplete"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Zakończ Zadanie" />
 
             <Button
                 android:id="@+id/editTask"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_alignParentRight="false"
                 android:layout_weight="1"
                 android:text="Edytuj" />

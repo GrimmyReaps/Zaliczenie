@@ -79,8 +79,8 @@ public class DBHandler extends SQLiteOpenHelper {
         // along with its key and value pair.
         values.put(NAME_COL, taskName);
         values.put(CONTENT_COL, taskContent);
-        values.put(DATE_COL, finishDate);
-        values.put(FINISHDATE_COL, strDate);
+        values.put(DATE_COL, strDate);
+        values.put(FINISHDATE_COL, finishDate);
         values.put(ISCOMPLETE_COL, "FALSE");
         values.put(PRIORITY_COL, priority);
         // after adding all values we are passing
@@ -90,6 +90,29 @@ public class DBHandler extends SQLiteOpenHelper {
         // at last we are closing our
         // database after adding database.
         db.close();
+    }
+
+    public void deleteTask(String taskName){
+        String[] taskNameArr = {taskName};
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_NAME, NAME_COL + "=?", taskNameArr);
+    }
+
+    public void completeTask(String taskName){
+        ContentValues cv = new ContentValues();
+        cv.put(ISCOMPLETE_COL, "TRUE");
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.update(TABLE_NAME, cv, NAME_COL + "= ?", new String[]{taskName});
+    }
+
+    public void updateTask(String oldTaskName, String newTaskName, String taskContent, String finishDate, String priority){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(NAME_COL, newTaskName);
+        cv.put(CONTENT_COL, taskContent);
+        cv.put(FINISHDATE_COL, finishDate);
+        cv.put(PRIORITY_COL, priority);
+        db.update(TABLE_NAME, cv, NAME_COL + "= ?", new String[]{oldTaskName});
     }
 
     @Override
@@ -122,12 +145,156 @@ public class DBHandler extends SQLiteOpenHelper {
                 }else{
                     completionState = false;
                 }
-                taskModalArrayList.add(new TaskModal(cursorTasks.getString(1), cursorTasks.getString(2), cursorTasks.getString(3), cursorTasks.getString(4), completionState, cursorTasks.getString(6)));
+                taskModalArrayList.add(new TaskModal(cursorTasks.getString(1),
+                                                    cursorTasks.getString(2),
+                                                    cursorTasks.getString(3),
+                                                    cursorTasks.getString(4),
+                                                    completionState,
+                                                    cursorTasks.getString(6)));
             } while (cursorTasks.moveToNext());
             // moving our cursor to next.
         }
         // at last closing our cursor
         // and returning our array list.
+        cursorTasks.close();
+        return taskModalArrayList;
+    }
+
+    public ArrayList<TaskModal> sortTasksByName()
+    {
+        // on below line we are creating a
+        // database for reading our database.
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        // on below line we are creating a cursor with query to
+        // read data from database.
+        Cursor cursorTasks = db.rawQuery("SELECT * FROM " + TABLE_NAME + " ORDER BY " + NAME_COL + " ASC", null);
+
+        // on below line we are creating a new array list.
+        ArrayList<TaskModal> taskModalArrayList = new ArrayList<>();
+        boolean completionState;
+        // moving our cursor to first position.
+        if (cursorTasks.moveToFirst()) {
+            do {
+                // on below line we are adding the data from
+                // cursor to our array list.
+                if(cursorTasks.getString(5).equals("TRUE")){
+                    completionState = true;
+                }else{
+                    completionState = false;
+                }
+                taskModalArrayList.add(new TaskModal(cursorTasks.getString(1),
+                        cursorTasks.getString(2),
+                        cursorTasks.getString(3),
+                        cursorTasks.getString(4),
+                        completionState,
+                        cursorTasks.getString(6)));
+            } while (cursorTasks.moveToNext());
+            // moving our cursor to next.
+        }
+        // at last closing our cursor
+        // and returning our array list.
+        cursorTasks.close();
+        return taskModalArrayList;
+    }
+
+    public ArrayList<TaskModal> sortTasksByDate()
+    {
+        // on below line we are creating a
+        // database for reading our database.
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        // on below line we are creating a cursor with query to
+        // read data from database.
+        Cursor cursorTasks = db.rawQuery("SELECT * FROM " + TABLE_NAME + " ORDER BY " + DATE_COL + " ASC", null);
+
+        // on below line we are creating a new array list.
+        ArrayList<TaskModal> taskModalArrayList = new ArrayList<>();
+        boolean completionState;
+        // moving our cursor to first position.
+        if (cursorTasks.moveToFirst()) {
+            do {
+                // on below line we are adding the data from
+                // cursor to our array list.
+                if(cursorTasks.getString(5).equals("TRUE")){
+                    completionState = true;
+                }else{
+                    completionState = false;
+                }
+                taskModalArrayList.add(new TaskModal(cursorTasks.getString(1),
+                        cursorTasks.getString(2),
+                        cursorTasks.getString(3),
+                        cursorTasks.getString(4),
+                        completionState,
+                        cursorTasks.getString(6)));
+            } while (cursorTasks.moveToNext());
+            // moving our cursor to next.
+        }
+        // at last closing our cursor
+        // and returning our array list.
+        cursorTasks.close();
+        return taskModalArrayList;
+    }
+
+    public ArrayList<TaskModal> sortTasksByDeadline()
+    {
+        // on below line we are creating a
+        // database for reading our database.
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        // on below line we are creating a cursor with query to
+        // read data from database.
+
+        Cursor cursorTasks = db.rawQuery("SELECT * FROM " + TABLE_NAME + " ORDER BY " + FINISHDATE_COL + " ASC", null);
+
+        // on below line we are creating a new array list.
+        ArrayList<TaskModal> taskModalArrayList = new ArrayList<>();
+        boolean completionState;
+        // moving our cursor to first position.
+        if (cursorTasks.moveToFirst()) {
+            do {
+                // on below line we are adding the data from
+                // cursor to our array list.
+                if(cursorTasks.getString(5).equals("TRUE")){
+                    completionState = true;
+                }else{
+                    completionState = false;
+                }
+                taskModalArrayList.add(new TaskModal(cursorTasks.getString(1),
+                        cursorTasks.getString(2),
+                        cursorTasks.getString(3),
+                        cursorTasks.getString(4),
+                        completionState,
+                        cursorTasks.getString(6)));
+            } while (cursorTasks.moveToNext());
+            // moving our cursor to next.
+        }
+        // at last closing our cursor
+        // and returning our array list.
+        cursorTasks.close();
+        return taskModalArrayList;
+    }
+
+    public ArrayList<TaskModal> fetchRow(String taskName){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String[] taskNameArr = {taskName};
+        Cursor cursorTasks = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + NAME_COL + "= ?", taskNameArr);
+        ArrayList<TaskModal> taskModalArrayList = new ArrayList<>();
+        boolean completionState;
+
+        if(cursorTasks.moveToFirst()){
+            if(cursorTasks.getString(5).equals("TRUE")){
+                completionState = true;
+            }else {
+                completionState = false;
+            }
+            taskModalArrayList.add(new TaskModal(cursorTasks.getString(1),
+                    cursorTasks.getString(2),
+                    cursorTasks.getString(3),
+                    cursorTasks.getString(4),
+                    completionState,
+                    cursorTasks.getString(6)));
+        }
         cursorTasks.close();
         return taskModalArrayList;
     }

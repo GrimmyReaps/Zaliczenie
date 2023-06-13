@@ -13,23 +13,28 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 
-public class CreateEditTask extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+public class CreateEditTask extends AppCompatActivity implements AdapterView.OnItemSelectedListener, View.OnClickListener {
 
     Button createNewTaskBtn;
     Button cancelBtn;
     Button editTaskBtn;
-    Button editCancelBtn;
-    TextView newTaskNameTxt;
+    Button deleteBtn;
+    Button markAsComplete;
+    EditText newTaskNameTxt;
     EditText newTaskDeadlineTxt;
     TextInputEditText newTaskContentTxt;
     TextView newTaskPriorityChoice;
     Spinner priorityChoice;
-    String[] priorities = {"HIGH", "MEDIUM", "LOW"};
+    String taskName;
+    String[] priorities = {"LOW", "MEDIUM", "HIGH"};
+    private ArrayList<TaskModal> taskModalArrayList;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,7 +101,7 @@ public class CreateEditTask extends AppCompatActivity implements AdapterView.OnI
             }
         };
 
-        newTaskNameTxt = (TextView) findViewById(R.id.newTaskName);
+        newTaskNameTxt = (EditText) findViewById(R.id.newTaskName);
         newTaskDeadlineTxt = (EditText) findViewById(R.id.newDeadline);
         newTaskContentTxt = (TextInputEditText) findViewById(R.id.newTaskContent);
         newTaskDeadlineTxt.addTextChangedListener(tw);
@@ -104,7 +109,14 @@ public class CreateEditTask extends AppCompatActivity implements AdapterView.OnI
         createNewTaskBtn = (Button) findViewById(R.id.createNewTask);
         cancelBtn = (Button) findViewById(R.id.cancel);
         editTaskBtn = (Button) findViewById(R.id.editTask);
-        editCancelBtn = (Button) findViewById(R.id.cancelEdit);
+        deleteBtn = (Button) findViewById(R.id.deleteTask);
+        markAsComplete = (Button) findViewById(R.id.markAsComplete);
+        createNewTaskBtn.setOnClickListener(this);
+        cancelBtn.setOnClickListener(this);
+        editTaskBtn.setOnClickListener(this);
+        deleteBtn.setOnClickListener(this);
+        markAsComplete.setOnClickListener(this);
+
 
         priorityChoice = (Spinner) findViewById(R.id.choosePriority);
         priorityChoice.setOnItemSelectedListener(this);
@@ -114,15 +126,30 @@ public class CreateEditTask extends AppCompatActivity implements AdapterView.OnI
 
         newTaskPriorityChoice = (TextView) findViewById(R.id.priorityDisplay);
 
+        DBHandler dbHandler = new DBHandler(CreateEditTask.this);
         Intent caller = getIntent();
         Bundle sendInfo = caller.getExtras();
         boolean isAdding = sendInfo.getBoolean("isAdding");
         if (isAdding){
             editTaskBtn.setVisibility(View.GONE);
-            editCancelBtn.setVisibility(View.GONE);
+            deleteBtn.setVisibility(View.GONE);
         }else{
             createNewTaskBtn.setVisibility(View.GONE);
             cancelBtn.setVisibility(View.GONE);
+            taskName = sendInfo.getString("TaskName");
+
+            taskModalArrayList = dbHandler.fetchRow(taskName);
+            TaskModal modal = taskModalArrayList.get(0);
+            newTaskNameTxt.setText(modal.getTaskName());
+            newTaskContentTxt.setText(modal.getTaskContent());
+            newTaskDeadlineTxt.setText(modal.getTaskDeadline());
+            if(modal.getTaskPriority().equals(priorities[0])) {
+                priorityChoice.setSelection(0);
+            }else if(modal.getTaskPriority().equals(priorities[1])){
+                priorityChoice.setSelection(1);
+            }else{
+                priorityChoice.setSelection(2);
+            }
         }
     }
 
@@ -134,5 +161,57 @@ public class CreateEditTask extends AppCompatActivity implements AdapterView.OnI
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
         newTaskPriorityChoice.setText("LOW");
+    }
+
+    @Override
+    public void onClick(View view) {
+        DBHandler dbHandler = new DBHandler(CreateEditTask.this);
+        if(view.getId() == createNewTaskBtn.getId()){
+            String toCheck = String.valueOf(newTaskDeadlineTxt.getText());
+            if(!toCheck.matches("^[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}$")){
+                Toast.makeText(view.getContext(), "Zły deadline podany", Toast.LENGTH_SHORT).show();
+            }else if(String.valueOf(newTaskNameTxt.getText()).isEmpty()) {
+                Toast.makeText(view.getContext(), "Tytuł nie może być pusty", Toast.LENGTH_SHORT).show();
+            }else{
+                //Toast.makeText(view.getContext(), "Correct", Toast.LENGTH_SHORT).show();
+                dbHandler.addNewTask(String.valueOf(newTaskNameTxt.getText()),
+                        String.valueOf(newTaskContentTxt.getText()),
+                        toCheck,
+                        String.valueOf(newTaskPriorityChoice.getText()));
+                Intent i = new Intent(this, MainActivity.class);
+                startActivity(i);
+            }
+        }
+        if (view.getId() == cancelBtn.getId()){
+            Intent i = new Intent(this, MainActivity.class);
+            startActivity(i);
+        }
+        if(view.getId() == deleteBtn.getId()){
+            dbHandler.deleteTask(String.valueOf(newTaskNameTxt.getText()));
+            Intent i = new Intent(this, MainActivity.class);
+            startActivity(i);
+        }
+        if(view.getId() == markAsComplete.getId()){
+            dbHandler.completeTask(String.valueOf(newTaskNameTxt.getText()));
+            Intent i = new Intent(this, MainActivity.class);
+            startActivity(i);
+        }
+        if(view.getId() == editTaskBtn.getId()){
+            String toCheck = String.valueOf(newTaskDeadlineTxt.getText());
+            if(!toCheck.matches("^[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}$")){
+                Toast.makeText(view.getContext(), "Zły deadline podany", Toast.LENGTH_SHORT).show();
+            }else if(String.valueOf(newTaskNameTxt.getText()).isEmpty()) {
+                Toast.makeText(view.getContext(), "Tytuł nie może być pusty", Toast.LENGTH_SHORT).show();
+            }else{
+                //Toast.makeText(view.getContext(), "Correct", Toast.LENGTH_SHORT).show();
+                dbHandler.updateTask(taskName,
+                        String.valueOf(newTaskNameTxt.getText()),
+                        String.valueOf(newTaskContentTxt.getText()),
+                        toCheck,
+                        String.valueOf(newTaskPriorityChoice.getText()));
+                Intent i = new Intent(this, MainActivity.class);
+                startActivity(i);
+            }
+        }
     }
 }

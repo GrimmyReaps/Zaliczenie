@@ -1,6 +1,8 @@
 package com.example.todolist;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,9 +28,11 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private final TextView taskTextView;
         private final Button taskButton;
+        private final Context viewHolderContext;
 
         public ViewHolder(View view) {
             super(view);
+            viewHolderContext = view.getContext();
 
             taskTextView = (TextView) view.findViewById(R.id.task_name);
             taskButton = (Button) itemView.findViewById(R.id.show_button);
@@ -47,7 +51,14 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
         @Override
         public void onClick(View view) {
             if(view.getId() == taskButton.getId()){
-                Toast.makeText(view.getContext(), taskTextView.getText(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(view.getContext(), taskTextView.getText(), Toast.LENGTH_SHORT).show();
+                Bundle info = new Bundle();
+                info.putBoolean("isAdding", false);
+                info.putString("TaskName", String.valueOf(taskTextView.getText()));
+
+                Intent i = new Intent(viewHolderContext, CreateEditTask.class);
+                i.putExtras(info);
+                viewHolderContext.startActivity(i);
             }
         }
     }
@@ -72,7 +83,12 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
         TextView textView = holder.taskTextView;
         textView.setText(modal.getTaskName());
         Button button = holder.taskButton;
-        button.setText("Wyświetl");
+        if(modal.getIsCompleted()) {
+            button.setText("Zakończony");
+            button.setEnabled(false);
+        }else{
+            button.setText("Wyświetl");
+        }
     }
 
 
