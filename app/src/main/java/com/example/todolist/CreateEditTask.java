@@ -133,6 +133,7 @@ public class CreateEditTask extends AppCompatActivity implements AdapterView.OnI
         if (isAdding){
             editTaskBtn.setVisibility(View.GONE);
             deleteBtn.setVisibility(View.GONE);
+            markAsComplete.setVisibility(View.GONE);
         }else{
             createNewTaskBtn.setVisibility(View.GONE);
             cancelBtn.setVisibility(View.GONE);
